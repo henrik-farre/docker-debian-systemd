@@ -1,10 +1,13 @@
+# syntax=docker/dockerfile:experimental
 FROM debian:stretch
 ENV LANG C.UTF-8
 ENV DEBIAN_FRONTEND noninteractive
 
 CMD ["/lib/systemd/systemd"]
 
-RUN apt-get update && apt-get install -y --no-install-recommends systemd python sudo
+RUN rm -f /etc/apt/apt.conf.d/docker-clean; echo 'Binary::apt::APT::Keep-Downloaded-Packages "true";' > /etc/apt/apt.conf.d/keep-cache
+RUN --mount=type=cache,target=/var/cache/apt --mount=type=cache,target=/var/lib/apt \
+  apt-get update && apt-get install -y --no-install-recommends systemd python sudo bash ca-certificates aptitude
 
 # Based on:
 # - https://github.com/geerlingguy/docker-debian9-ansible/blob/master/Dockerfile
